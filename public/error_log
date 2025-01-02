@@ -1,0 +1,5 @@
+[19-Feb-2024 10:35:03 UTC] PHP Warning:  require(/home/u1571705/public_html/psb.tsn.ponpes.id/public/../vendor/autoload.php): Failed to open stream: No such file or directory in /home/u1571705/public_html/psb.tsn.ponpes.id/public/index.php on line 34
+[19-Feb-2024 10:35:03 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/u1571705/public_html/psb.tsn.ponpes.id/public/../vendor/autoload.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/u1571705/public_html/psb.tsn.ponpes.id/public/index.php:34
+Stack trace:
+#0 {main}
+  thrown in /home/u1571705/public_html/psb.tsn.ponpes.id/public/index.php on line 34

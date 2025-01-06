@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Pendaftar;
 use App\Models\Shop\Product;
 use App\Models\User;
+use App\Models\Walisantri;
 use App\Providers\RouteServiceProvider;
 use Filament\Forms\Components\Actions;
 use Filament\Forms\Components\TextInput;
@@ -61,6 +62,7 @@ dd($this->username);
                     'username' => $this->kk,
                     'password' => $this->password,
                     'panelrole' => 'psb',
+                    'panelrole_id' => 4,
                 ]);
                 Walisantri::create([
                     'user_id' => $user->id,

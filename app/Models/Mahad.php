@@ -2,22 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Mahad extends Model
 {
-    use HasFactory;
-
-    // /**
-    //  * The attributes that should be cast.
-    //  *
-    //  * @var array
-    //  */
-    // protected $casts = [
-    //     'kodepos_id' => 'array',
-    // ];
-
     public function kelasSantris()
     {
         return $this->hasMany(KelasSantri::class);
@@ -47,4 +37,11 @@ class Mahad extends Model
     {
         return $this->hasManyThrough(Kelas::class, Qism::class);
     }
+
+    public function pendidikanpesantrens()
+    {
+        return $this->hasMany(Pendidikanpesantren::class);
+    }
+
+    use log;
 }

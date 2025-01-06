@@ -22,6 +22,9 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Enums\ThemeMode;
+use Filament\Livewire\Notifications;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\VerticalAlignment;
 
 class NaikqismPanelProvider extends PanelProvider
 {
@@ -38,7 +41,7 @@ class NaikqismPanelProvider extends PanelProvider
                 'success' => "#274043",
                 'warning' => Color::Orange,
             ])
-            ->font('Raleway')
+            ->font('SF Pro')
             ->brandLogo(asset('PSBTSN Logo.png'))
             ->brandLogoHeight('5rem')
             ->favicon(asset('favicon-32x32.png'))
@@ -75,6 +78,10 @@ class NaikqismPanelProvider extends PanelProvider
                 'logout' => MenuItem::make()->label('Keluar'),
             ])
             ->navigation(false)
-            ->defaultThemeMode(ThemeMode::Light);
+            ->defaultThemeMode(ThemeMode::Light)
+            ->bootUsing(function () {
+                Notifications::alignment(Alignment::Right);
+                Notifications::verticalAlignment(VerticalAlignment::End);
+            });;
     }
 }

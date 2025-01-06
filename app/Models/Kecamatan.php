@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Kecamatan extends Model
 {
-    use HasFactory;
-
     public function kabupaten()
     {
         return $this->belongsTo(Kabupaten::class);
@@ -48,4 +47,6 @@ class Kecamatan extends Model
     {
         return $this->hasMany(Walisantri::class, 'al_w_kecamatan_id');
     }
+
+    use log;
 }

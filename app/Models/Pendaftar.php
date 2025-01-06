@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Pendaftar extends Model
 {
-    use HasFactory;
-
     protected $casts = [
         'ps_kkh_medsos_sering' => 'array',
     ];
@@ -17,4 +16,6 @@ class Pendaftar extends Model
     {
         return $this->belongsTo(Santri::class);
     }
+
+    use log;
 }

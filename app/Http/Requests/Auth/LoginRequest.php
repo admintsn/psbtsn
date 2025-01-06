@@ -61,20 +61,21 @@ class LoginRequest extends FormRequest
 
         $username = User::where('username', $this->username)->count();
 
-        $naik = Santri::where('kartu_keluarga', $this->kk)->pluck('naikqism')->toArray();
+        $naik = Santri::where('kartu_keluarga', $this->kk)->pluck('jenis_pendaftar_id')->toArray();
 
 
         $user = User::where('username', $this->kk)->first();
 
         $password = 'vnPgyLdEKcLdeqPjnXHfHicgEXd3kRujdnWjTAbxpUe9tbvVLEa7VwefU7cLYYaNfxokn9jw9fqyp97gbMtw9TakscwmqhFCanj4jLVHTNXowzJzvPH9LeMeJXmpTJAkqu47pap9daPCLezahf9n3mTAwnbAyYjqpnprMvhmaJxncNsswqwhhFqvpvpUafpmismJEjtEMo9HYATyWars9qR9mKEtfwaez3M9NmmJHLb97mHhTLzARRaLaehg3TM';
         $updatepassword = Hash::make($password);
-        $adanaik = in_array('naik', $naik);
+        $adanaik = in_array(2, $naik);
 
+        // dd($this);
 
         switch (true) {
 
             case ($this->tahap2 !== null):
-                // dd($this->tahap2);
+                dd($this->tahap2);
 
                 $user = User::where('username', $this->tahap2)->first();
 
@@ -82,24 +83,27 @@ class LoginRequest extends FormRequest
                     ->count();
 
                 $cekpendaftar = Santri::where('kartu_keluarga', $this->tahap2)
-                    ->where('jenispendaftar', '!=', null)
+                    ->where('jenis_pendaftar_id', '!=', null)
                     ->where(function ($query) {
-                        $query->where('tahap', 'Tahap 2')
-                            ->orWhere('tahap', 'Tahap 3');
+                        $query->where('tahap_pendafataran_id', 2)
+                            ->orWhere('tahap_pendafataran_id', 3);
                     })
                     ->count();
 
                 if ($cekuser === 0) {
+                    dd('tahap2authfaield');
 
                     throw ValidationException::withMessages([
                         'tahap2' => trans('auth.failed'),
                     ]);
                 } elseif ($cekpendaftar === 0) {
+                    dd('tahap2authfaield2');
 
                     throw ValidationException::withMessages([
                         'tahap2' => trans('auth.belumtahap2'),
                     ]);
                 } elseif ($cekpendaftar !== 0) {
+                    dd('tahap2authfaieldchannel');
 
                     Auth::login($user, $this->boolean('remember'));
                     Session::put('channel', 'tahapdua');
@@ -109,17 +113,20 @@ class LoginRequest extends FormRequest
                 break;
 
             case ($this->kk !== null):
-                // dd('form naik qism');
+                dd('form naik qism');
                 if ($kk === 0) {
                     throw ValidationException::withMessages([
                         'naikqism' => trans('auth.failed'),
                     ]);
                     // Form Naik Qism, jika KK ada
                 } elseif ($kk !== 0) {
+                    dd('aa');
                     $walisantri = Walisantri::where('user_id', $user->id)->first();
 
                     // Form Naik Qism, table santri jika naikqism = 'naik'
                     if ($adanaik === true) {
+
+                        dd('bb');
 
                         if (!$user || !Hash::check($this->password, $user->password)) {
                             User::where('username', $this->kk)
@@ -135,6 +142,7 @@ class LoginRequest extends FormRequest
                         Session::put('channel', 'naikqism');
                         RateLimiter::clear($this->throttleKey());
                     } elseif ($adanaik === false) {
+                        dd('authpasswordsalah');
                         throw ValidationException::withMessages([
                             'naikqism' => trans('auth.password'),
                         ]);
@@ -168,13 +176,14 @@ class LoginRequest extends FormRequest
                     Session::put('channel', 'psb');
                     RateLimiter::clear($this->throttleKey());
                 } elseif ($user === null) {
-                    // dd($user);
+                    // dd($user, 'b');
 
                     $user = User::create([
                         'name' => $this->name,
                         'username' => $this->username,
                         'password' => $password,
                         'panelrole' => 'psb',
+                        'panelrole_id' => 4,
                         'channel' => 'psb',
                     ]);
                     Walisantri::create([

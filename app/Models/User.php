@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\log;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel as FilamentPanel;
 use Filament\Tables\Columns\Layout\Panel;
@@ -41,13 +42,13 @@ class User extends Authenticatable implements FilamentUser
             return true;
         } elseif (auth()->user()->panelrole === 'psb' && $panel->getId() === 'naikqism') {
             return true;
-        }elseif (auth()->user()->panelrole === 'psb' && $panel->getId() === 'tahapdua') {
+        } elseif (auth()->user()->panelrole === 'psb' && $panel->getId() === 'tahapdua') {
             return true;
-        }elseif (auth()->user()->panelrole === 'walisantri' && $panel->getId() === 'psb') {
+        } elseif (auth()->user()->panelrole === 'walisantri' && $panel->getId() === 'psb') {
             return true;
         } elseif (auth()->user()->panelrole === 'walisantri' && $panel->getId() === 'naikqism') {
             return true;
-        }elseif (auth()->user()->panelrole === 'walisantri' && $panel->getId() === 'tahapdua') {
+        } elseif (auth()->user()->panelrole === 'walisantri' && $panel->getId() === 'tahapdua') {
             return true;
         } else {
 
@@ -60,17 +61,17 @@ class User extends Authenticatable implements FilamentUser
         $naikqism = Session::get('channel');
         // dd($naikqism);
 
-        if ($naikqism === 'psb') {
+        if ($naikqism == 'psb') {
             return match ((string)$this->panelrole) {
                 'psb' => 'psb',
                 'walisantri' => 'psb',
             };
-        } elseif ($naikqism === 'naikqism') {
+        } elseif ($naikqism == 'naikqism') {
             return match ((string)$this->panelrole) {
                 'psb' => 'naikqism',
                 'walisantri' => 'naikqism',
             };
-        }elseif ($naikqism === 'tahapdua') {
+        } elseif ($naikqism == 'tahapdua') {
             return match ((string)$this->panelrole) {
                 'psb' => 'tahapdua',
                 'walisantri' => 'tahapdua',
@@ -97,4 +98,6 @@ class User extends Authenticatable implements FilamentUser
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    use log;
 }

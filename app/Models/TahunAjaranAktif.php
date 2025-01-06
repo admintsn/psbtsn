@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class TahunAjaranAktif extends Model
 {
-    use HasFactory;
-
     public function qism()
     {
         return $this->belongsTo(Qism::class);
@@ -23,4 +22,11 @@ class TahunAjaranAktif extends Model
     {
         return $this->belongsTo(Semester::class);
     }
+
+    public function sem()
+    {
+        return $this->belongsTo(Sem::class,'semester_id');
+    }
+
+    use log;
 }

@@ -8,11 +8,14 @@ use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Livewire\Notifications;
 use Filament\Navigation\MenuItem;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\VerticalAlignment;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -38,7 +41,7 @@ class TahapduaPanelProvider extends PanelProvider
                 'warning' => Color::Orange,
                 'white' => "#FFFFFF",
             ])
-            ->font('Raleway')
+            ->font('SF Pro')
             ->brandLogo(asset('PSBTSN Logo.png'))
             ->brandLogoHeight('5rem')
             ->favicon(asset('favicon-32x32.png'))
@@ -73,6 +76,10 @@ class TahapduaPanelProvider extends PanelProvider
                 'logout' => MenuItem::make()->label('Keluar'),
             ])
             ->navigation(false)
-            ->defaultThemeMode(ThemeMode::Light);
+            ->defaultThemeMode(ThemeMode::Light)
+            ->bootUsing(function () {
+                Notifications::alignment(Alignment::Right);
+                Notifications::verticalAlignment(VerticalAlignment::End);
+            });;
     }
 }

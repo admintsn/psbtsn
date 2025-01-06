@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class MudirQism extends Model
 {
-    use HasFactory;
-
     public function pengajar()
     {
         return $this->belongsTo(Pengajar::class);
@@ -18,4 +17,6 @@ class MudirQism extends Model
     {
         return $this->belongsTo(Qism::class);
     }
+
+    use log;
 }

@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Semester extends Model
 {
-    use HasFactory;
+    public function qism()
+    {
+        return $this->belongsTo(Qism::class);
+    }
 
     public function kelasSantris()
     {
@@ -18,4 +22,16 @@ class Semester extends Model
     {
         return $this->hasMany(TahunAjaranAktif::class);
     }
+
+    public function sem()
+    {
+        return $this->belongsTo(Sem::class);
+    }
+
+    public function sem_sels()
+    {
+        return $this->belongsTo(Sem::class, 'sem_sel');
+    }
+
+    use log;
 }

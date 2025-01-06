@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\Dashboardpsb;
+use App\Filament\Pages\Dashboardtahapsatu;
 use App\Filament\Resources\PendaftaranResource\Widgets\PendaftaranSantriBaruTahapPertama;
 use App\Filament\Resources\SantriResource\Widgets\TambahCalonSantri;
 use Filament\Http\Middleware\Authenticate;
@@ -22,6 +24,9 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Enums\ThemeMode;
+use Filament\Livewire\Notifications;
+use Filament\Support\Enums\Alignment;
+use Filament\Support\Enums\VerticalAlignment;
 
 class PsbPanelProvider extends PanelProvider
 {
@@ -40,14 +45,14 @@ class PsbPanelProvider extends PanelProvider
                 'success' => "#274043",
                 'warning' => Color::Orange,
             ])
-            ->font('Raleway')
+            ->font('SF Pro')
             ->brandLogo(asset('PSBTSN Logo.png'))
             ->brandLogoHeight('5rem')
             ->favicon(asset('favicon-32x32.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Dashboard::class,
+                // Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -77,8 +82,12 @@ class PsbPanelProvider extends PanelProvider
                 'logout' => MenuItem::make()->label('Keluar'),
             ])
             ->navigation(false)
-            ->defaultThemeMode(ThemeMode::Light);
-            // ->topbar(false);
-            // ->spa();
+            ->defaultThemeMode(ThemeMode::Light)
+            ->bootUsing(function () {
+                Notifications::alignment(Alignment::Right);
+                Notifications::verticalAlignment(VerticalAlignment::End);
+            });
+        // ->topbar(false);
+        // ->spa();
     }
 }

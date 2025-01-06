@@ -2,10 +2,31 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class PesanDaftar extends Model
 {
-    use HasFactory;
+    public function walisantri()
+    {
+        return $this->belongsTo(Walisantri::class);
+    }
+
+    public function tahunberjalan()
+    {
+        return $this->hasOne(TahunBerjalan::class);
+    }
+
+    public function waktuDatang()
+    {
+        return $this->belongsTo(WaktuDatangKembali::class, 'waktu_datang');
+    }
+
+    public function waktuKembali()
+    {
+        return $this->belongsTo(WaktuDatangKembali::class, 'waktu_kembali');
+    }
+
+    use log;
 }

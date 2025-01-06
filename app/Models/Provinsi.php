@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Provinsi extends Model
 {
-    use HasFactory;
-
     public function kabupatens()
     {
         return $this->hasMany(Kabupaten::class);
@@ -43,4 +42,11 @@ class Provinsi extends Model
     {
         return $this->hasMany(Walisantri::class, 'al_w_provinsi_id');
     }
+
+    public function pendidikanpesantrens()
+    {
+        return $this->hasMany(Pendidikanpesantren::class);
+    }
+
+    use log;
 }

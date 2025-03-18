@@ -75,7 +75,7 @@ class LoginRequest extends FormRequest
         switch (true) {
 
             case ($this->tahap2 !== null):
-                dd($this->tahap2);
+                // dd($this->tahap2);
 
                 $user = User::where('username', $this->tahap2)->first();
 
@@ -85,25 +85,25 @@ class LoginRequest extends FormRequest
                 $cekpendaftar = Santri::where('kartu_keluarga', $this->tahap2)
                     ->where('jenis_pendaftar_id', '!=', null)
                     ->where(function ($query) {
-                        $query->where('tahap_pendafataran_id', 2)
-                            ->orWhere('tahap_pendafataran_id', 3);
+                        $query->where('tahap_pendaftaran_id', 2)
+                            ->orWhere('tahap_pendaftaran_id', 3);
                     })
                     ->count();
 
                 if ($cekuser === 0) {
-                    dd('tahap2authfaield');
+                    // dd('tahap2authfaield');
 
                     throw ValidationException::withMessages([
                         'tahap2' => trans('auth.failed'),
                     ]);
                 } elseif ($cekpendaftar === 0) {
-                    dd('tahap2authfaield2');
+                    // dd('tahap2authfaield2');
 
                     throw ValidationException::withMessages([
                         'tahap2' => trans('auth.belumtahap2'),
                     ]);
                 } elseif ($cekpendaftar !== 0) {
-                    dd('tahap2authfaieldchannel');
+                    // dd('tahap2channel');
 
                     Auth::login($user, $this->boolean('remember'));
                     Session::put('channel', 'tahapdua');
@@ -113,20 +113,20 @@ class LoginRequest extends FormRequest
                 break;
 
             case ($this->kk !== null):
-                dd('form naik qism');
+                // dd('form naik qism');
                 if ($kk === 0) {
                     throw ValidationException::withMessages([
                         'naikqism' => trans('auth.failed'),
                     ]);
                     // Form Naik Qism, jika KK ada
                 } elseif ($kk !== 0) {
-                    dd('aa');
+                    // dd('aa');
                     $walisantri = Walisantri::where('user_id', $user->id)->first();
 
                     // Form Naik Qism, table santri jika naikqism = 'naik'
                     if ($adanaik === true) {
 
-                        dd('bb');
+                        // dd('bb');
 
                         if (!$user || !Hash::check($this->password, $user->password)) {
                             User::where('username', $this->kk)
@@ -142,7 +142,7 @@ class LoginRequest extends FormRequest
                         Session::put('channel', 'naikqism');
                         RateLimiter::clear($this->throttleKey());
                     } elseif ($adanaik === false) {
-                        dd('authpasswordsalah');
+                        // dd('authpasswordsalah');
                         throw ValidationException::withMessages([
                             'naikqism' => trans('auth.password'),
                         ]);

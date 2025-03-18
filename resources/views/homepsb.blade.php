@@ -110,7 +110,7 @@
 
         <div class="justify-center flex text-sm">
             <ul class="timeline timeline-snap-icon timeline-compact timeline-vertical">
-                <li>
+                {{-- <li>
                     <div class="timeline-middle">
                         @svg('heroicon-s-check-circle', 'w-7 h-7', ['style'=> 'color: #274043'])
                     </div>
@@ -162,16 +162,7 @@
 
                     </div>
                     <hr class="bg-tsn-header" />
-                </li>
-                <li>
-                    <hr class="bg-tsn-header" />
-                    <div class="timeline-middle">
-                        @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
-                    </div>
-                    @livewire('statusnaikqism')
-
-                    <hr class="bg-tsn-header" />
-                </li>
+                </li> --}}
                 {{-- <li>
                     <div class="timeline-middle">
                         @svg('heroicon-s-check-circle', 'w-7 h-7', ['style'=> 'color: #274043'])
@@ -257,7 +248,7 @@
                     </div>
                     <hr class="bg-tsn-accent" />
                 </li> --}}
-                {{-- <li>
+                <li>
                     <hr class="bg-tsn-header" />
                     <div class="timeline-middle">
                         @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
@@ -265,8 +256,8 @@
                     @livewire('statuspendaftaran')
 
                     <hr class="bg-tsn-header" />
-                </li>--}}
-                {{-- <li>
+                </li>
+                <li>
 
                     <hr class="bg-tsn-header" />
                     <div class="timeline-middle">
@@ -317,8 +308,8 @@
 
 
                     <hr class="bg-tsn-header" />
-                </li> --}}
-                {{-- <li>
+                </li>
+                <li>
                     <hr class="bg-tsn-header" />
                     <div class="timeline-middle">
                         @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
@@ -326,7 +317,7 @@
                     @livewire('statusbaru')
 
                     <hr class="bg-tsn-header" />
-                </li> --}}
+                </li>
 
                 <div class="timeline-middle">
                     @svg('heroicon-s-book-open', 'w-7 h-7', ['style'=> 'color: #274043'])

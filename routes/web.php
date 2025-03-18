@@ -19,6 +19,10 @@ Route::get('/', function () {
     return view('home');
 });
 
+Route::get('/baru', function () {
+    return view('homepsb');
+});
+
 Route::view('/', 'home')->name('home');
 
 Route::get('/dashboard', function () {

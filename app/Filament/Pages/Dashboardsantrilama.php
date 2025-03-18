@@ -12,12 +12,11 @@ use Filament\Pages\Dashboard\Concerns\HasFiltersForm;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Support\HtmlString;
 
-class DashboardTahapDua extends Dashboard
+class DashboardSantriLama extends Dashboard
 {
-
     // protected static ?string $title = 'PSB TSN';
 
-    // protected static string $routePath = 'tahapdua';
+    // protected static string $routePath = 'tahapsatu';
 
     public function getTitle(): string | Htmlable
     {
@@ -77,8 +76,9 @@ class DashboardTahapDua extends Dashboard
         </tbody>
         </table>
 <br>
-        <p class="text-xl">TAHAP 2</p>
-        <p class="text-xl">UPLOAD DOKUMEN</p>
+<p class="text-xl">PENDAFTARAN SANTRI LAMA</p>
+        <p class="text-xl">TAHAP 1</p>
+        <p class="text-xl">PENGISIAN FORMULIR PENDAFTARAN DAN UPLOAD DOKUMEN</p>
 
                         </div>')),
 

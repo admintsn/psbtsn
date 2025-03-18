@@ -4,7 +4,9 @@ namespace App\Providers\Filament;
 
 use App\Filament\Naikqism\Resources\PendaftaranNaikQismResource\Widgets\PendaftaranNaikQismTahapPertama;
 use App\Filament\Naikqism\Resources\SantriResource\Widgets\DaftarkanSantriNaikQism;
+use App\Filament\Naikqism\Resources\SantriResource\Widgets\FormulirUploadNaikQism;
 use App\Filament\Pages\Dashboard;
+use App\Filament\Pages\DashboardSantriLama;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -48,7 +50,7 @@ class NaikqismPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Naikqism/Resources'), for: 'App\\Filament\\Naikqism\\Resources')
             ->discoverPages(in: app_path('Filament/Naikqism/Pages'), for: 'App\\Filament\\Naikqism\\Pages')
             ->pages([
-                Dashboard::class,
+                DashboardSantriLama::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Naikqism/Widgets'), for: 'App\\Filament\\Naikqism\\Widgets')
             ->widgets([
@@ -56,6 +58,7 @@ class NaikqismPanelProvider extends PanelProvider
                 // Widgets\FilamentInfoWidget::class,
                 PendaftaranNaikQismTahapPertama::class,
                 DaftarkanSantriNaikQism::class,
+                FormulirUploadNaikQism::class,
 
             ])
             ->middleware([

@@ -4,6 +4,7 @@ namespace App\Filament\Tahapdua\Resources\SantriResource\Widgets;
 
 use App\Models\Kabupaten;
 use App\Models\Kecamatan;
+use App\Models\Kelas;
 use App\Models\Kelurahan;
 use App\Models\Kodepos;
 use App\Models\Pendaftar;
@@ -14,6 +15,7 @@ use App\Models\QismDetailHasKelas;
 use App\Models\Santri;
 use App\Models\Semester;
 use App\Models\TahunAjaran;
+use App\Models\TahunBerjalan;
 use App\Models\Walisantri;
 use Carbon\Carbon;
 use Closure;
@@ -49,6 +51,7 @@ use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Enums\ActionsPosition;
+use Illuminate\Database\Eloquent\Model;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FormulirTahapDua extends BaseWidget
@@ -77,18 +80,26 @@ class FormulirTahapDua extends BaseWidget
 
     public function table(Table $table): Table
     {
+
+        $walisantri = Walisantri::where('user_id', Auth::user()->id)->first();
+
+        $tahunberjalanaktif = TahunBerjalan::where('is_active', 1)->first();
+        $ts = TahunBerjalan::where('tb', $tahunberjalanaktif->ts)->first();
+
         return $table
             ->heading('Status Upload Dokumen')
             ->description('Scroll/gulir ke kanan untuk melihat status dokumen')
             ->paginated(false)
             ->striped()
             ->query(
-                Santri::where('kartu_keluarga', Auth::user()->username)
-                    ->where('jenispendaftar', '!=', null)
+
+                Santri::where('walisantri_id', $walisantri->id)
+                    ->where('jenis_pendaftar_id', 1)
                     ->where(function ($query) {
-                        $query->where('tahap', 'Tahap 2')
-                            ->orWhere('tahap', 'Tahap 3');
+                        $query->where('tahap_pendaftaran_id', 2)
+                            ->orWhere('tahap_pendaftaran_id', 3);
                     })
+                    ->where('tahun_berjalan_id', $ts->id)
             )
             ->columns([
                 TextColumn::make('nama_lengkap')
@@ -96,127 +107,235 @@ class FormulirTahapDua extends BaseWidget
                     ->size(TextColumn\TextColumnSize::Large),
 
                 TextColumn::make('file_kk')
-                    ->label('Kartu Keluarga')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('1. Kartu Keluarga')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_kk !== null) {
 
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_kk);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_akte')
-                    ->label('Akte')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('2. Akte')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_akte !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_akte);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_srs')
-                    ->label('Surat Rekomendasi')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('3. Surat Rekomendasi')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_srs !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_srs);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_ijz')
-                    ->label('Ijazah')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('4. Ijazah')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_ijz !== null) {
 
-                TextColumn::make('file_cvd')
-                    ->label('Sertifikat Vaksin Cvd-19')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
-                    // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
-                    ->iconColor('success')
-                    // ->circular()
-                    ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_ijz);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_skt')
-                    ->label('Surat Keterangan Taklim')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('5. Surat Keterangan Taklim')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_skt !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_skt);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_skuasa')
-                    ->label('Surat Kuasa')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('6. Surat Kuasa')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_skuasa !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_skuasa);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_spkm')
-                    ->label('Surat Pernyataan Kesanggupan')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('7. Surat Pernyataan Kesanggupan')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_spkm !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_spkm);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_pka')
-                    ->label('Surat Permohonan Keringanan Administrasi')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('8. Surat Permohonan Keringanan Administrasi')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_pka !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_pka);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_ktmu')
-                    ->label('Surat Keterangan Tidak Mampu (U)')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('9. Surat Keterangan Tidak Mampu (U)')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_ktmu !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_ktmu);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
                 TextColumn::make('file_ktmp')
-                    ->label('Surat Keterangan Tidak Mampu (P)')
-                    ->color('white')
-                    ->formatStateUsing(fn (string $state): string => __("."))
+                    ->label('10. Surat Keterangan Tidak Mampu (P)')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
                     // ->limit(1)
-                    ->icon('heroicon-m-check-circle')
+                    ->icon('heroicon-s-eye')
                     ->iconColor('success')
                     // ->circular()
                     ->alignCenter()
-                    ->placeholder('Belum Upload'),
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_ktmp !== null) {
 
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_ktmp);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
+
+                TextColumn::make('file_cvd')
+                    ->label('11. Surat Keterangan Sehat dari RS/Puskesmas/Klinik')
+                    // ->description(fn(): string => 'Kartu Keluarga', position: 'above')
+                    // ->color('white')
+                    ->formatStateUsing(fn(string $state): string => __("Lihat"))
+                    // ->limit(1)
+                    ->icon('heroicon-s-eye')
+                    ->iconColor('success')
+                    // ->circular()
+                    ->alignCenter()
+                    ->placeholder(new HtmlString('Belum Upload'))
+                    ->url(function (Model $record) {
+                        if ($record->file_cvd !== null) {
+
+                            return ("https://psb.tsn.ponpes.id/storage/" . $record->file_cvd);
+                        }
+                    })
+                    ->badge()
+                    ->color('success')
+                    ->openUrlInNewTab(),
 
             ])
             ->defaultSort('nama_lengkap')
@@ -224,6 +343,7 @@ class FormulirTahapDua extends BaseWidget
                 Tables\Actions\EditAction::make()
                     ->label('Mulai Upload')
                     ->button()
+                    ->color('info')
                     // ->outlined()
                     ->icon('heroicon-m-cloud-arrow-up')
                     ->modalHeading('Upload Dokumen')
@@ -245,21 +365,7 @@ class FormulirTahapDua extends BaseWidget
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                                                 </svg>
                                                 </a></th>
-                                                <td class="text-xs"><a href="https://wa.me/6282210862400">WA Admin Putra (Abu Hammaam)</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th><a href="https://wa.me/6285236459012"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
-                                                </svg>
-                                                </a></th>
-                                                <td class="text-xs"><a href="https://wa.me/6285236459012">WA Admin Putra (Abu Fathimah Hendi)</a></td>
-                                            </tr>
-                                            <tr>
-                                                <th><a href="https://wa.me/6281333838691"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
-                                                </svg>
-                                                </a></th>
-                                                <td class="text-xs"><a href="https://wa.me/6281333838691">WA Admin Putra (Akh Irfan)</a></td>
+                                                <td class="text-xs"><a href="https://wa.me/6282210862400">WA Admin Putra</a></td>
                                             </tr>
                                             <tr>
                                                 <th><a href="https://wa.me/628175765767"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -277,17 +383,60 @@ class FormulirTahapDua extends BaseWidget
                     ->modalWidth('full')
                     ->closeModalByClickingAway(false)
                     ->modalSubmitActionLabel('Simpan')
-                    ->modalCancelAction(fn (StaticAction $action) => $action->label('Batal'))
+                    ->modalCancelAction(fn(StaticAction $action) => $action->label('Batal'))
                     ->form([
 
-                        TextInput::make('nama_lengkap')
-                            ->label('Nama Santri')
-                            ->disabled()
-                            ->required(),
+                        Section::make()
+                            ->schema([
+
+                                Placeholder::make('')
+
+                                    ->content(function (Model $record) {
+                                        return (new HtmlString('<div><p class="text-3xl"><strong>' . $record->nama_lengkap . '</strong></p></div>'));
+                                    }),
+
+                                Placeholder::make('')
+                                    ->content(function (Model $record) {
+
+                                        $qd = QismDetail::where('id', $record->qism_detail_id)->first();
+
+                                        $kelas = Kelas::where('id', $record->kelas_id)->first();
+
+                                        return (new HtmlString('<div class="">
+                                    <table class="table w-fit">
+                <!-- head -->
+                <thead>
+                    <tr class="border-tsn-header">
+                        <th class="text-tsn-header text-lg text-start" colspan="3">PENDAFTAR:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- row 1 -->
+                    <tr>
+                        <th class="text-lg">Qism</th>
+                        <td class="text-lg">:</td>
+                        <td class="text-lg">' . $qd->qism_detail . '</td>
+                    </tr>
+                    <tr>
+                        <th class="text-lg">Kelas</th>
+                        <td class="text-lg">:</td>
+                        <td class="text-lg">' . $kelas->kelas . '</td>
+                    </tr>
+
+
+
+                </tbody>
+                </table>
+
+                                </div>'));
+                                    }),
+
+                            ]),
+
 
                         Placeholder::make('')
                             ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg strong"><strong>UPLOAD DOKUMEN</strong></p>
+                                                    <p class="text-lg strong"><strong>PETUNJUK UPLOAD DOKUMEN</strong></p>
                                                 </div>')),
 
                         Placeholder::make('')
@@ -360,16 +509,16 @@ class FormulirTahapDua extends BaseWidget
 
                         FileUpload::make('file_kk')
                             ->label('1. Kartu Keluarga')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/kk')
+                            // ->helperText(new HtmlString('*Untuk <strong>santri baru</strong> dan <strong>santri lama</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/01_file_kk')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->kartu_keluarga . "-" . $record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Kartu Keluarga-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->kartu_keluarga . "-" . $record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('01 Kartu Keluarga-'),
                             ),
 
                         Placeholder::make('')
@@ -378,16 +527,16 @@ class FormulirTahapDua extends BaseWidget
 
                         FileUpload::make('file_akte')
                             ->label('2. Akte')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/akte')
+                            // ->helperText(new HtmlString('*Untuk <strong>santri baru</strong> dan <strong>santri lama</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/02_file_akte')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Akte-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('02 Akte-'),
                             ),
 
                         Placeholder::make('')
@@ -396,18 +545,16 @@ class FormulirTahapDua extends BaseWidget
 
                         FileUpload::make('file_srs')
                             ->label('3. Surat Rekomendasi')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong>, dan dari <strong>pondok pesantren</strong>
-                            <br>
-                            Yang dimaksud surat rekomendasi dari mahad sebelumnya adalah <strong>surat keterangan berkelakuan baik</strong>, bukan surat keterangan status santri'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/srs')
+                            ->helperText(new HtmlString('Yang dimaksud surat rekomendasi dari mahad sebelumnya adalah <strong>surat keterangan berkelakuan baik</strong>, bukan surat keterangan status santri.'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/03_file_srs')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Rekomendasi-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('03 Surat Rekomendasi-'),
                             ),
 
                         Placeholder::make('')
@@ -415,17 +562,17 @@ class FormulirTahapDua extends BaseWidget
                                                 </div>')),
 
                         FileUpload::make('file_ijz')
-                            ->label('4. Ijazah atau Hasil Evaluasi Belajar')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/ijz')
+                            ->label('4. Ijazah atau Hasil Evaluasi Belajar atau Rapor')
+                            ->helperText(new HtmlString('*Jika tidak ada, dapat dikosongkan'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/04_file_ijz')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Ijazah-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('04 Ijazah-'),
                             ),
 
                         Placeholder::make('')
@@ -434,16 +581,16 @@ class FormulirTahapDua extends BaseWidget
 
                         FileUpload::make('file_skt')
                             ->label('5. Surat Keterangan Taklim Orang Tua')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/skt')
+                            // ->helperText(new HtmlString('*Untuk <strong>santri baru</strong> dan <strong>santri lama</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/05_file_skt')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Keterangan Taklim-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('05 Surat Keterangan Taklim-'),
                             ),
 
                         Placeholder::make('')
@@ -453,33 +600,15 @@ class FormulirTahapDua extends BaseWidget
                         FileUpload::make('file_skuasa')
                             ->label('6. Surat Kuasa dari Orang Tua Kandung')
                             ->helperText(new HtmlString('*Hanya bagi yang mendaftarkan ananda bukan melalui Orang Tua Kandung'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/skuasa')
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/06_file_skuasa')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Kuasa-'),
-                            ),
-
-                        Placeholder::make('')
-                            ->content(new HtmlString('<div class="border-b">
-                                                </div>')),
-
-                        FileUpload::make('file_cvd')
-                            ->label('7. Sertifikat Vaksin Covid-19 terakhir')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong>, opsional'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/cvd')
-                            ->removeUploadedFileButtonPosition('right')
-                            ->openable()
-                            ->downloadable()
-                            ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Sertifikat Vaksin Covid-19-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('06 Surat Kuasa-'),
                             ),
 
                         Placeholder::make('')
@@ -487,45 +616,180 @@ class FormulirTahapDua extends BaseWidget
                                                 </div>')),
 
                         FileUpload::make('file_spkm')
-                            ->label('8. Surat Pernyataan Kesanggupan (Bermaterai (10000)')
-                            ->helperText(new HtmlString('*Untuk <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/spkm')
+                            ->label('7. Surat Pernyataan Kesanggupan (Bermaterai (10000))')
+                            // ->helperText(new HtmlString('*Untuk <strong>santri baru</strong> dan <strong>santri lama</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/07_file_spkm')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Penyataan Kesanggupan-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('07 Surat Penyataan Kesanggupan-'),
                             ),
+
+                        Placeholder::make('')
+                            ->visible(fn($record) => $record->qism_id == 2)
+                            ->content(new HtmlString('<div>
+                            Unduh format dokumen surat pernyataan kesanggupan:<br>
+                            Pilih salah satu<br>
+                                            <table class="table max-w-fit bg-white">
+                                                <!-- head -->
+                                                <thead>
+                                                    <tr class="border-b">
+                                                        <th class="text-tsn-header">Qism</th>
+                                                        <th class="text-tsn-header">Unduh</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">Pra Tahfidz (Menginap)
+                                                        </td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-PT Surat Kesanggupan Orang Tua (menginap).pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">Pra Tahfidz (Fullday tanpa makan)
+                                                        </td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-PT Surat Kesanggupan Orang Tua (fullday tanpa makan).pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">Pra Tahfidz (Fullday dengan makan)
+                                                        </td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-PT Surat Kesanggupan Orang Tua (fullday dengan makan).pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                                        </div>')),
+
+                        Placeholder::make('')
+                            ->visible(fn($record) => $record->qism_id == 3)
+                            ->content(new HtmlString('<div class="border-b">
+                            Unduh format dokumen surat pernyataan kesanggupan:<br><br>
+                                            <table class="table max-w-fit bg-white">
+                                                <!-- head -->
+                                                <thead>
+                                                    <tr class="border-b">
+                                                        <th class="text-tsn-header">Qism</th>
+                                                        <th class="text-tsn-header">Unduh</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">Tahfidzul Qur\'an</td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-TQ Surat Kesanggupan Orang Tua.pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+                                                    
+                                                </tbody>
+                                            </table>
+                                                        </div>')),
+
+                        Placeholder::make('')
+                            ->visible(fn($record) => $record->qism_id == 4)
+                            ->content(new HtmlString('<div class="border-b">
+                            Unduh format dokumen surat pernyataan kesanggupan:<br><br>
+                                            <table class="table max-w-fit bg-white">
+                                                <!-- head -->
+                                                <thead>
+                                                    <tr class="border-b">
+                                                        <th class="text-tsn-header">Qism</th>
+                                                        <th class="text-tsn-header">Unduh</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">I\'dad Lughoh</td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-ID Surat Kesanggupan Orang Tua.pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+                                                    
+                                                </tbody>
+                                            </table>
+                                                        </div>')),
+
+                        Placeholder::make('')
+                            ->visible(fn($record) => $record->qism_id == 5)
+                            ->content(new HtmlString('<div class="border-b">
+                            Unduh format dokumen surat pernyataan kesanggupan:<br><br>
+                                            <table class="table max-w-fit bg-white">
+                                                <!-- head -->
+                                                <thead>
+                                                    <tr class="border-b">
+                                                        <th class="text-tsn-header">Qism</th>
+                                                        <th class="text-tsn-header">Unduh</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">Mutawasithoh</td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-TNMTW Surat Kesanggupan Orang Tua.pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                                        </div>')),
+
+                        Placeholder::make('')
+                            ->visible(fn($record) => $record->qism_id == 6)
+                            ->content(new HtmlString('<div class="border-b">
+                            Unduh format dokumen surat pernyataan kesanggupan:<br><br>
+                                            <table class="table max-w-fit bg-white">
+                                                <!-- head -->
+                                                <thead>
+                                                    <tr class="border-b">
+                                                        <th class="text-tsn-header">Qism</th>
+                                                        <th class="text-tsn-header">Unduh</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    
+                                                    <tr class="border-b">
+                                                        <td class="text-tsn-header">Tarbiyatunnisaa</td>
+                                                        <td><a
+                                                                href="/contohsurat/PSB-TSN-2526-TNMTW Surat Kesanggupan Orang Tua.pdf" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" color="blue" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75v6.75m0 0-3-3m3 3 3-3m-8.25 6a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z" />
+</svg></a></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                                        </div>')),
 
                         Placeholder::make('')
                             ->content(new HtmlString('<div class="border-b">
                                                 </div>')),
-                        // ->hidden(function (Pendaftar $pendaftar, $record) {
-
-                        //     $datapendaftar = Pendaftar::where('santri_id', $record->id)->first();
-
-                        //     if ($datapendaftar->ps_kadm_status === "Santri/Santriwati mampu (tidak ada permasalahan biaya)") {
-                        //         return true;
-                        //     } else {
-                        //         return false;
-                        //     }
-                        // }),
 
                         FileUpload::make('file_pka')
-                            ->label('9. Surat Permohonan Keringanan Administrasi (bagi yang mengajukan keringanan)')
-                            ->helperText(new HtmlString('*Untuk yang <strong>mengajukan keringanan</strong>, baik <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/pka')
+                            ->label('8. Surat Permohonan Keringanan Administrasi (bagi yang mengajukan keringanan)')
+                            ->helperText(new HtmlString('*Hanya bagi yang <strong>mengajukan keringanan</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/08_file_pka')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Permohonan Keringanan Administrasi-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('08 Surat Permohonan Keringanan Administrasi-'),
                             ),
 
                         Placeholder::make('')
@@ -533,17 +797,17 @@ class FormulirTahapDua extends BaseWidget
                                                 </div>')),
 
                         FileUpload::make('file_ktmu')
-                            ->label('10. Surat Keterangan Tidak Mampu dari Ustadz setempat (bagi yang mengajukan keringanan)')
-                            ->helperText(new HtmlString('*Untuk yang <strong>mengajukan keringanan</strong>, baik <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/ktmu')
+                            ->label('9. Surat Keterangan Tidak Mampu dari Ustadz setempat (bagi yang mengajukan keringanan)')
+                            ->helperText(new HtmlString('*Hanya bagi yang <strong>mengajukan keringanan</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/09_file_ktmu')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Keterangan Tidak Mampu (U)-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('09 Surat Keterangan Tidak Mampu (U)-'),
                             ),
 
                         Placeholder::make('')
@@ -551,17 +815,35 @@ class FormulirTahapDua extends BaseWidget
                                                 </div>')),
 
                         FileUpload::make('file_ktmp')
-                            ->label('11. Surat Keterangan Tidak Mampu dari aparat pemerintah setempat (bagi yang mengajukan keringanan)')
-                            ->helperText(new HtmlString('*Untuk yang <strong>mengajukan keringanan</strong>, baik <strong>pendaftar baru</strong> dan <strong>pendaftar naik qism</strong>'))
-                            ->image()
-                            ->maxSize(5024)
-                            ->directory('calonsantri/ktmp')
+                            ->label('10. Surat Keterangan Tidak Mampu dari aparat pemerintah setempat (bagi yang mengajukan keringanan)')
+                            ->helperText(new HtmlString('*Hanya bagi yang <strong>mengajukan keringanan</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/10_file_ktmp')
                             ->removeUploadedFileButtonPosition('right')
                             ->openable()
                             ->downloadable()
                             ->getUploadedFileNameForStorageUsing(
-                                fn (TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "." . $file->getClientOriginalExtension())
-                                    ->prepend('Surat Keterangan Tidak Mampu (P)-'),
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('10 Surat Keterangan Tidak Mampu (P)-'),
+                            ),
+
+                        Placeholder::make('')
+                            ->content(new HtmlString('<div class="border-b">
+                                                </div>')),
+
+                        FileUpload::make('file_cvd')
+                            ->label('11. Surat Keterangan Sehat dari RS/Puskesmas/Klinik')
+                            // ->helperText(new HtmlString('*Hanya bagi yang <strong>mengajukan keringanan</strong>'))
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->maxSize(2048)
+                            ->directory('psb2526/baru/10_file_cvd')
+                            ->removeUploadedFileButtonPosition('right')
+                            ->openable()
+                            ->downloadable()
+                            ->getUploadedFileNameForStorageUsing(
+                                fn(TemporaryUploadedFile $file, $record): string => (string) str($record->nama_lengkap . "-" . $record->tahun_berjalan->tb . "." . $file->getClientOriginalExtension())
+                                    ->prepend('11 Surat Keterangan Sehat-'),
                             ),
 
 
@@ -575,7 +857,7 @@ class FormulirTahapDua extends BaseWidget
                             ->success()
                             ->title('Alhamdulillah data calon santri telah tersimpan')
                             ->body('Lanjutkan upload dokumen calon santri, atau keluar jika telah selesai')
-                            ->persistent()
+                            // ->persistent()
                             ->color('success')
                             ->send();
                     })->modalCloseButton(false),

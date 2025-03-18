@@ -17,6 +17,7 @@ use App\Models\PenghasilanWalisantri;
 use App\Models\Provinsi;
 use App\Models\Statuskepemilikanrumah;
 use App\Models\StatusWalisantri;
+use App\Models\User;
 use App\Models\Walisantri;
 use App\Models\YaTidak;
 use Egulias\EmailValidator\Parser\Comment;
@@ -121,7 +122,7 @@ class PendaftaranSantriBaruTahapPertama extends BaseWidget
                                 ->success()
                                 ->title('Data Walisantri telah tersimpan')
                                 ->body('Lanjutkan dengan menambah data calon santri')
-                                ->persistent()
+                                // ->persistent()
                                 ->color('Success')
                                 ->send();
 
@@ -130,7 +131,24 @@ class PendaftaranSantriBaruTahapPertama extends BaseWidget
                             $walisantri = Walisantri::find($record->id);
                             $walisantri->is_collapse = 1;
                             $walisantri->ws_emis4 = 1;
+                            $walisantri->nama_kpl_kel_santri = Str::ucwords(strtolower($record->nama_kpl_kel_santri));
+                            $walisantri->ak_nama_lengkap = Str::ucwords(strtolower($record->ak_nama_lengkap));
+                            $walisantri->ak_nama_kunyah = Str::ucwords(strtolower($record->ak_nama_kunyah));
+                            $walisantri->ak_tempat_lahir = Str::ucwords(strtolower($record->ak_tempat_lahir));
+                            $walisantri->ak_kep_kel_kk = Str::ucwords(strtolower($record->ak_kep_kel_kk));
+                            $walisantri->ik_nama_lengkap = Str::ucwords(strtolower($record->ik_nama_lengkap));
+                            $walisantri->ik_nama_kunyah = Str::ucwords(strtolower($record->ik_nama_kunyah));
+                            $walisantri->ik_tempat_lahir = Str::ucwords(strtolower($record->ik_tempat_lahir));
+                            $walisantri->ik_kep_kel_kk = Str::ucwords(strtolower($record->ik_kep_kel_kk));
+                            $walisantri->w_nama_lengkap = Str::ucwords(strtolower($record->w_nama_lengkap));
+                            $walisantri->w_nama_kunyah = Str::ucwords(strtolower($record->w_nama_kunyah));
+                            $walisantri->w_tempat_lahir = Str::ucwords(strtolower($record->w_tempat_lahir));
+                            $walisantri->w_kep_kel_kk = Str::ucwords(strtolower($record->w_kep_kel_kk));
                             $walisantri->save();
+
+                            $properuser = User::where('id', $record->user->id)->first();
+                            $properuser->name = Str::ucwords(strtolower($record->user->name));
+                            $properuser->save();
                         })
                         ->modalDescription(new HtmlString('<div class="">
                                                             <p>Butuh bantuan?</p>

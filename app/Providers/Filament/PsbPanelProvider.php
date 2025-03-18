@@ -2,9 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Dashboard;
-use App\Filament\Pages\Dashboardpsb;
-use App\Filament\Pages\Dashboardtahapsatu;
+use App\Filament\Pages\DashboardTahapSatu;
 use App\Filament\Resources\PendaftaranResource\Widgets\PendaftaranSantriBaruTahapPertama;
 use App\Filament\Resources\SantriResource\Widgets\TambahCalonSantri;
 use Filament\Http\Middleware\Authenticate;
@@ -25,13 +23,14 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Enums\ThemeMode;
 use Filament\Livewire\Notifications;
+use Filament\Pages\Dashboard;
 use Filament\Support\Enums\Alignment;
 use Filament\Support\Enums\VerticalAlignment;
 
 class PsbPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
-    {
+    { 
         return $panel
             ->default()
             ->id('psb')
@@ -50,9 +49,9 @@ class PsbPanelProvider extends PanelProvider
             ->brandLogoHeight('5rem')
             ->favicon(asset('favicon-32x32.png'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
+            ->discoverPages(in: app_path('Filament/Tahapdua/Pages'), for: 'App\\Filament\\Tahapdua\\Pages')
             ->pages([
-                // Dashboard::class,
+                DashboardTahapSatu::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

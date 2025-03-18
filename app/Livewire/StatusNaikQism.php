@@ -12,6 +12,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -45,8 +46,7 @@ class StatusNaikQism extends Component implements HasForms, HasTable
             ->count();
 
         $cekpendaftar = Santri::where('kartu_keluarga', $this->ceknaikqism)
-            ->where('jenispendaftar', 'naikqism')
-            ->where('status_tahap', 'Diterima')
+            ->where('jenis_pendaftar_id', 2)
             ->count();
 
         if ($cekuser === 0) {
@@ -54,9 +54,9 @@ class StatusNaikQism extends Component implements HasForms, HasTable
                 'naikqismmsg' => trans('auth.failed'),
             ]);
             // Form Naik Qism, jika tahap1 ada
-        } elseif ($cekpendaftar < 1) {
+        } elseif ($cekpendaftar === 0) {
             throw ValidationException::withMessages([
-                'naikqismmsg' => trans('auth.belumceknaikqism'),
+                'naikqismmsg' => trans('auth.bukanpendaftarlama'),
             ]);
             // Form Naik Qism, jika tahap1 ada
         }
@@ -66,62 +66,104 @@ class StatusNaikQism extends Component implements HasForms, HasTable
     {
         return $table
             ->query(Santri::where('kartu_keluarga', $this->ceknaikqism)
-                ->where('jenispendaftar', 'naikqism')
-                ->where(function ($query) {
-                    $query->where('status_tahap', 'Diterima');
-                    // ->orWhere('status_tahap', 'Tidak Diterima');
-                }))
-            ->heading('Status Penerimaan Naik Qism')
+                ->where('jenis_pendaftar_id', 2))
+            // ->where(function ($query) {
+            //     $query->where('tahap_pendaftaran_id', 1)
+            //         ->orWhere('tahap_pendaftaran_id', 2);
+            // }))
+            ->heading('Status Pendaftaran')
             ->columns([
                 Stack::make([
                     TextColumn::make('No.')
                         ->rowIndex()
                         ->grow(false)
-                        ->description(fn ($record): string => "No.", position: 'above'),
+                        ->description(fn($record): string => "No.", position: 'above'),
 
                     TextColumn::make('nama_lengkap')
                         ->label('Nama')
                         ->grow(false)
-                        ->description(fn ($record): string => "Nama:", position: 'above'),
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->description(fn($record): string => "Nama:", position: 'above'),
 
-                    TextColumn::make('qism_detail')
+                    TextColumn::make('qism_detail.qism_detail')
                         ->label('Qism')
                         ->grow(false)
-                        ->description(fn ($record): string => "Mendaftar ke Qism", position: 'above'),
+                        ->description(fn($record): string => "Mendaftar ke Qism", position: 'above'),
 
-                    TextColumn::make('kelas')
+                    TextColumn::make('kelas.kelas')
                         ->label('Kelas')
                         ->grow(false),
 
-                    TextColumn::make('status_tahap')
+                    TextColumn::make('statusPendaftaran.status_pendaftaran')
                         ->label('Status Tahap 1')
                         ->badge()
-                        ->color(fn (string $state): string => match ($state) {
+                        ->default(function ($record) {
+                            if ($record->daftarnaikqism == 'Mendaftar') {
+                                return ('Proses Seleksi');
+                            } elseif ($record->daftarnaikqism == 'Belum Mendaftar') {
+                                return ('Belum Mendaftar');
+                            }
+                        })
+                        ->color(fn(string $state): string => match ($state) {
                             'Lolos' => 'success',
                             'Tidak Lolos' => 'danger',
                             'Diterima' => 'success',
-                            'Tidak Diterima' => 'danger',
+                            'Tidak Diterima' => 'info',
+                            'Proses Seleksi' => 'info',
+                            'Belum Mendaftar' => 'danger',
+                        })
+                        ->formatStateUsing(function ($record, $state) {
+                            if ($state == 'Tidak Diterima') {
+                                return 'Lolos';
+                            } elseif ($state == 'Lolos') {
+                                return 'Lolos';
+                            } elseif ($state == 'Tidak Lolos') {
+                                return 'Tidak Lolos';
+                            } elseif ($state == 'Diterima') {
+                                return 'Diterima';
+                            } elseif ($state == 'Proses Seleksi') {
+                                return 'Proses Seleksi';
+                            } elseif ($state == 'Belum Mendaftar') {
+                                return 'Belum Mendaftar';
+                            }
                         })
                         ->grow(false)
-                        ->size(TextColumnSize::Large)
-                        ->description(fn ($record): string => "Status:", position: 'above'),
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->description(fn($record): string => "Status:", position: 'above'),
 
-                    TextColumn::make('pengumuman')
-                        ->label('Rekomendasi')
-                        ->default(new HtmlString('<br>Tahap berikutnya adalah <strong>TAHAP PENGIRIMAN DOKUMEN</strong> dan <strong>TAHAP PENGUMPULAN PEMBAYARAN ADMINISTRASI AWAL</strong>
-                        <br>
-                        <br>
-                        Rincian tahap tersebut akan diumumkan oleh masing-masing penanggung jawab qism'))
-                        ->grow(false),
+                    // TextColumn::make('tahapPendaftaran.tahap_pendaftaran')
+                    //     ->label('Tahap')
+                    //     ->grow(false)
+                    //     ->description(fn($record): string => "Tahap saat ini:", position: 'above'),
 
+                    // TextColumn::make('deskripsitahap')
+                    //     ->label('Pengumuman')
+                    //     ->grow(false),
+
+                    TextColumn::make('jenisPendaftaran.jenis_pendaftaran')
+                        ->label('Jenis')
+                        ->grow(false)
+                        ->description(fn($record): string => "Jenis:", position: 'above'),
 
 
                 ])
 
             ])
-            ->actions([])
+            ->defaultSort('nama_lengkap')
+            ->actions([
+                // Action::make('Login')
+                // ->url('//siakad.tsn.ponpes.id')
+                // ->button()
+                // ->openUrlInNewTab()
+                // ->hidden(fn ($record) => $record->tahap !== 'Tahap 2')
+                // ->extraAttributes([
+                //     'class' => 'bg-tsn-accent text-black focus:bg-tsn-bg',
+                // ])
+            ])
             ->paginated(false)
-            ->emptyStateHeading('Klik Tombol CEK STATUS');
+            ->emptyStateHeading('Klik Tombol CEK');
     }
 
     public function render(): View
@@ -130,12 +172,10 @@ class StatusNaikQism extends Component implements HasForms, HasTable
         // ->where('jenispendaftar', '!=', null)->first();
 
         $datanaikqism = Santri::where('kartu_keluarga', $this->ceknaikqism)
-            ->where('jenispendaftar', 'naikqism')
-            ->where('tahap', 'Tahap 3')->first();
+            ->where('jenis_pendaftar_id', 2)->first();
 
         $cekditerimanaikqism = Santri::where('kartu_keluarga', $this->ceknaikqism)
-            ->where('jenispendaftar', 'naikqism')
-            ->where('status_tahap', 'Diterima')->count();
+            ->where('jenis_pendaftar_id', 2)->first();
 
         return view('livewire.statusnaikqism', [
             'datanaikqism' => $datanaikqism,

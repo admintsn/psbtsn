@@ -12,6 +12,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -43,7 +44,7 @@ class StatusPendaftaran extends Component implements HasForms, HasTable
             ->count();
 
         $cekpendaftar = Santri::where('kartu_keluarga', $this->tahap1)
-            ->where('jenispendaftar', '!=', null)
+            ->where('jenis_pendaftar_id', 1)
             ->count();
 
         if ($cekuser === 0) {
@@ -58,70 +59,94 @@ class StatusPendaftaran extends Component implements HasForms, HasTable
             // Form Naik Qism, jika tahap1 ada
         }
 
-        Santri::where('kartu_keluarga', $this->tahap1)
-            ->where('jenispendaftar', '!=', null);
+        // Santri::where('kartu_keluarga', $this->tahap1)
+        //     ->where('jenis_pendaftar_id', 1, null);
 
-        $data = Santri::where('kartu_keluarga', $this->tahap1)
-            ->where('jenispendaftar', '!=', null);
+        // $data = Santri::where('kartu_keluarga', $this->tahap1)
+        //     ->where('jenis_pendaftar_id', 1, null);
     }
 
     public function table(Table $table): Table
     {
         return $table
             ->query(Santri::where('kartu_keluarga', $this->tahap1)
-                ->where('jenispendaftar', '!=', null))
+                ->where('jenis_pendaftar_id', 1, null)
+                ->where(function ($query) {
+                    $query->where('tahap_pendaftaran_id', 1)
+                        ->orWhere('tahap_pendaftaran_id', 2);
+                }))
             ->heading('Status Pendaftaran')
             ->columns([
                 Stack::make([
                     TextColumn::make('No.')
                         ->rowIndex()
                         ->grow(false)
-                        ->description(fn ($record): string => "No.", position: 'above'),
+                        ->description(fn($record): string => "No.", position: 'above'),
 
                     TextColumn::make('nama_lengkap')
                         ->label('Nama')
                         ->grow(false)
-                        ->description(fn ($record): string => "Nama:", position: 'above'),
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->description(fn($record): string => "Nama:", position: 'above'),
 
-                    TextColumn::make('qism_detail')
+                    TextColumn::make('qism_detail.qism_detail')
                         ->label('Qism')
                         ->grow(false)
-                        ->description(fn ($record): string => "Mendaftar ke Qism", position: 'above'),
+                        ->description(fn($record): string => "Mendaftar ke Qism", position: 'above'),
 
-                    TextColumn::make('kelas')
+                    TextColumn::make('kelas.kelas')
                         ->label('Kelas')
                         ->grow(false),
 
-                    TextColumn::make('tahap')
-                        ->label('Tahap')
-                        ->grow(false)
-                        ->description(fn ($record): string => "Tahap saat ini:", position: 'above'),
-
-                    TextColumn::make('status_tahap')
+                    TextColumn::make('statusPendaftaran.status_pendaftaran')
                         ->label('Status Tahap 1')
                         ->badge()
-                        ->color(fn (string $state): string => match ($state) {
+                        ->default('Proses Seleksi')
+                        ->color(fn(string $state): string => match ($state) {
                             'Lolos' => 'success',
                             'Tidak Lolos' => 'danger',
+                            'Diterima' => 'success',
+                            'Tidak Diterima' => 'info',
+                            'Proses Seleksi' => 'info',
+                        })
+                        ->formatStateUsing(function ($record, $state) {
+                            if ($state == 'Tidak Diterima') {
+                                return 'Lolos';
+                            } elseif ($state == 'Lolos') {
+                                return 'Lolos';
+                            } elseif ($state == 'Tidak Lolos') {
+                                return 'Tidak Lolos';
+                            } elseif ($state == 'Diterima') {
+                                return 'Diterima';
+                            } elseif ($state == 'Proses Seleksi') {
+                                return 'Proses Seleksi';
+                            }
                         })
                         ->grow(false)
-                        ->description(fn ($record): string => "Status:", position: 'above'),
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->description(fn($record): string => "Status:", position: 'above'),
 
-                    TextColumn::make('deskripsitahap')
-                        ->label('Pengumuman')
-                        ->grow(false),
+                    TextColumn::make('tahapPendaftaran.tahap_pendaftaran')
+                        ->label('Tahap')
+                        ->grow(false)
+                        ->description(fn($record): string => "Tahap saat ini:", position: 'above'),
 
+                    // TextColumn::make('deskripsitahap')
+                    //     ->label('Pengumuman')
+                    //     ->grow(false),
 
-
-                    TextColumn::make('jenispendaftar')
+                    TextColumn::make('jenisPendaftaran.jenis_pendaftaran')
                         ->label('Jenis')
                         ->grow(false)
-                        ->description(fn ($record): string => "Jenis:", position: 'above'),
+                        ->description(fn($record): string => "Jenis:", position: 'above'),
 
 
                 ])
 
             ])
+            ->defaultSort('nama_lengkap')
             ->actions([
                 // Action::make('Login')
                 // ->url('//siakad.tsn.ponpes.id')
@@ -133,20 +158,20 @@ class StatusPendaftaran extends Component implements HasForms, HasTable
                 // ])
             ])
             ->paginated(false)
-            ->emptyStateHeading('Klik Tombol CEK STATUS');
+            ->emptyStateHeading('Klik Tombol CEK');
     }
 
     public function render(): View
     {
         // $data = Santri::where('kartu_keluarga', $this->tahap1)
-        // ->where('jenispendaftar', '!=', null)->first();
+        // ->where('jenis_pendaftar_id', '!=', null)->first();
 
         $data = Santri::where('kartu_keluarga', $this->tahap1)
-            ->where('jenispendaftar', '!=', null)->first();
+            ->where('jenis_pendaftar_id', '!=', null)->first();
 
         $tahap2 = Santri::where('kartu_keluarga', $this->tahap1)
-            ->where('jenispendaftar', '!=', null)
-            ->where('tahap', 'Tahap 2')->count();
+            ->where('jenis_pendaftar_id', '!=', null)
+            ->where('tahap_pendaftaran_id', 2)->count();
 
         return view('livewire.statuspendaftaran', [
             'data' => $data,

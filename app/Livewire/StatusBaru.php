@@ -12,6 +12,7 @@ use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Stack;
@@ -45,16 +46,26 @@ class StatusBaru extends Component implements HasForms, HasTable
             ->count();
 
         $cekpendaftar = Santri::where('kartu_keluarga', $this->tahap3)
-            ->where('jenispendaftar', 'Baru')
-            ->where('status_tahap', 'Diterima')
+            ->where('jenis_pendaftar_id', 1)
             ->count();
 
-        if ($cekuser === 0) {
+        $cekpendaftarstatus = Santri::where('kartu_keluarga', $this->tahap3)
+            ->where('jenis_pendaftar_id', 1)
+            ->where('status_pendaftaran_id', 2)
+            ->count();
+
+
+        if ($cekuser == 0) {
             throw ValidationException::withMessages([
                 'tahap3' => trans('auth.failed'),
             ]);
             // Form Naik Qism, jika tahap1 ada
-        } elseif ($cekpendaftar < 1) {
+        } elseif ($cekpendaftar === 0) {
+            throw ValidationException::withMessages([
+                'tahap3' => trans('auth.bukanpendaftar'),
+            ]);
+            // Form Naik Qism, jika tahap1 ada
+        } elseif ($cekpendaftarstatus < 1) {
             throw ValidationException::withMessages([
                 'tahap3' => trans('auth.belumtahap3'),
             ]);
@@ -66,10 +77,10 @@ class StatusBaru extends Component implements HasForms, HasTable
     {
         return $table
             ->query(Santri::where('kartu_keluarga', $this->tahap3)
-                ->where('jenispendaftar', 'Baru')
+                ->where('jenis_pendaftar_id', 1)
                 ->where(function ($query) {
-                    $query->where('status_tahap', 'Diterima');
-                        // ->orWhere('status_tahap', 'Tidak Diterima');
+                    $query->where('status_pendaftaran_id', 2);
+                    // ->orWhere('status_pendaftaran_id', 'Tidak Diterima');
                 }))
             ->heading('Status Penerimaan Santri Baru')
             ->columns([
@@ -77,37 +88,40 @@ class StatusBaru extends Component implements HasForms, HasTable
                     TextColumn::make('No.')
                         ->rowIndex()
                         ->grow(false)
-                        ->description(fn ($record): string => "No.", position: 'above'),
+                        ->description(fn($record): string => "No.", position: 'above'),
 
                     TextColumn::make('nama_lengkap')
                         ->label('Nama')
                         ->grow(false)
-                        ->description(fn ($record): string => "Nama:", position: 'above'),
+                        ->description(fn($record): string => "Nama:", position: 'above'),
 
-                    TextColumn::make('qism_detail')
+                    TextColumn::make('qism_detail.qism_detail')
                         ->label('Qism')
                         ->grow(false)
-                        ->description(fn ($record): string => "Mendaftar ke Qism", position: 'above'),
+                        ->description(fn($record): string => "Mendaftar ke Qism", position: 'above'),
 
-                    TextColumn::make('kelas')
+                    TextColumn::make('kelas.kelas')
                         ->label('Kelas')
                         ->grow(false),
 
-                    TextColumn::make('status_tahap')
+                    TextColumn::make('statusPendaftaran.status_pendaftaran')
                         ->label('Status Tahap 1')
                         ->badge()
-                        ->color(fn (string $state): string => match ($state) {
+                        ->color(fn(string $state): string => match ($state) {
                             'Lolos' => 'success',
                             'Tidak Lolos' => 'danger',
                             'Diterima' => 'success',
                             'Tidak Diterima' => 'danger',
+                            'Proses Seleksi' => 'info',
                         })
+                        ->default('Proses Seleksi')
                         ->grow(false)
-                        ->size(TextColumnSize::Large)
-                        ->description(fn ($record): string => "Status:", position: 'above'),
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->description(fn($record): string => "Status:", position: 'above'),
 
-                        TextColumn::make('pengumuman')
-                        ->label('Rekomendasi')
+                    TextColumn::make('pengumuman')
+                        ->label('Pengumuman')
                         ->default(new HtmlString('<br>Tahap berikutnya adalah <strong>TAHAP PENGIRIMAN DOKUMEN</strong> dan <strong>TAHAP PENGUMPULAN PEMBAYARAN ADMINISTRASI AWAL</strong>
                         <br>
                         <br>
@@ -122,21 +136,21 @@ class StatusBaru extends Component implements HasForms, HasTable
             ])
             ->actions([])
             ->paginated(false)
-            ->emptyStateHeading('Klik Tombol CEK STATUS');
+            ->emptyStateHeading('Klik Tombol CEK');
     }
 
     public function render(): View
     {
         // $data = Santri::where('kartu_keluarga', $this->tahap1)
-        // ->where('jenispendaftar', '!=', null)->first();
+        // ->where('jenis_pendaftar_id', '!=', null)->first();
 
         $data = Santri::where('kartu_keluarga', $this->tahap3)
-            ->where('jenispendaftar', 'Baru')
-            ->where('tahap', 'Tahap 3')->first();
+            ->where('jenis_pendaftar_id', 1)
+            ->where('tahap_pendaftaran_id', 3)->first();
 
         $cekditerima = Santri::where('kartu_keluarga', $this->tahap3)
-            ->where('jenispendaftar', 'Baru')
-            ->where('status_tahap', 'Diterima')->count();
+            ->where('jenis_pendaftar_id', 1)
+            ->where('status_pendaftaran_id', 2)->count();
 
         return view('livewire.statusbaru', [
             'data' => $data,

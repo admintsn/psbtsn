@@ -67,7 +67,9 @@ use Filament\Tables\Columns\Layout\Split;
 use Filament\Tables\Columns\Layout\Grid as TableGrid;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Enums\ActionsPosition;
+use Illuminate\Database\Eloquent\Model;
 use Schmeits\FilamentCharacterCounter\Forms\Components\TextInput as ComponentsTextInput;
 
 class TambahCalonSantri extends BaseWidget
@@ -98,6 +100,9 @@ class TambahCalonSantri extends BaseWidget
     {
         $walisantri = Walisantri::where('user_id', Auth::user()->id)->first();
 
+        $tahunberjalanaktif = TahunBerjalan::where('is_active', 1)->first();
+        $ts = TahunBerjalan::where('tb', $tahunberjalanaktif->ts)->first();
+
         return $table
             ->heading('2. Tambah Calon Santri')
             ->paginated(false)
@@ -106,9 +111,10 @@ class TambahCalonSantri extends BaseWidget
             ->emptyStateIcon('heroicon-o-book-open')
             ->query(
 
-                Santri::where('walisantri_id', $walisantri->id)->whereHas('statussantri', function ($query) {
-                    $query->where('stat_santri_id', 1);
-                })
+                Santri::where('walisantri_id', $walisantri->id)
+                    ->where('jenis_pendaftar_id', 1)
+                    ->where('tahun_berjalan_id', $ts->id)
+
             )
             ->columns([
                 Split::make([
@@ -116,28 +122,48 @@ class TambahCalonSantri extends BaseWidget
                         ->rowIndex(),
                     TextColumn::make('nama_lengkap')
                         ->description(fn($record): string => "Nama Calon Santri:", position: 'above'),
-                    TextColumn::make('kelassantri.qism.qism')
+                    TextColumn::make('qism_detail.abbr_qism_detail')
                         ->description(fn($record): string => "Mendaftar ke qism:", position: 'above'),
-                    TextColumn::make('kelassantri.kelas.kelas')
+                    TextColumn::make('kelas.kelas')
                         ->description(fn($record): string => "Kelas:", position: 'above'),
-                ])
+
+                    TextColumn::make('belum_nism')
+                        ->label('Status')
+                        ->badge()
+                        ->color(fn(string $state): string => match ($state) {
+                            'Terdaftar' => 'info',
+                        })
+                        ->default('Terdaftar')
+                        ->description(fn($record): string => "Status:", position: 'above'),
+ 
+                    TextColumn::make('s_emis4')
+                        ->label('Status Data Santri')
+                        ->default('Belum Lengkap')
+                        ->size(TextColumn\TextColumnSize::Large)
+                        ->weight(FontWeight::Bold)
+                        ->description(fn($record): string => "Status Data Santri:", position: 'above')
+                        ->formatStateUsing(function (Model $record) {
+                            if ($record->s_emis4 == false) {
+                                return ('Belum lengkap');
+                            } elseif ($record->s_emis4 == true) {
+                                return ('Lengkap');
+                            }
+                        })
+                        ->badge()
+                        ->color(function (Model $record) {
+                            if ($record->s_emis4 == false) {
+                                return ('danger');
+                            } elseif ($record->s_emis4 == true) {
+                                return ('success');
+                            }
+                        }),
+                ])->from('md')
 
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Tambah Calon Santri')
-                    ->modalHeading(' ')
-                    // ->hidden(function () {
-
-                    //     $walisantri_id = Walisantri::where('kartu_keluarga_santri', Auth::user()->username)->first();
-
-                    //     if ($walisantri_id->is_collapse == true) {
-                    //         return false;
-                    //     } elseif ($walisantri_id->is_collapse == false) {
-                    //         return true;
-                    //     }
-                    // })
-                    ->modalHeading(' ')
+                    ->modalHeading('Tambah Calon Santri')
                     ->modalCloseButton(false)
                     ->modalWidth('full')
                     ->closeModalByClickingAway(false)
@@ -183,9 +209,18 @@ class TambahCalonSantri extends BaseWidget
                             ->success()
                             ->title('Alhamdulillah data calon santri telah tersimpan')
                             ->body('Lanjutkan menambah calon santri, atau keluar jika telah selesai')
-                            ->persistent()
+                            // ->persistent()
                             ->color('success')
                             ->send();
+
+                        $santri = Santri::find($record->id);
+
+                        $santri->nama_lengkap = Str::ucwords(strtolower($record->nama_lengkap));
+                        $santri->nama_panggilan = Str::ucwords(strtolower($record->nama_panggilan));
+                        $santri->tempat_lahir = Str::ucwords(strtolower($record->tempat_lahir));
+                        $santri->nama_kpl_kel = Str::ucwords(strtolower($record->nama_kpl_kel));
+
+                        $santri->save();
                     })
                     ->steps([
 
@@ -223,13 +258,6 @@ class TambahCalonSantri extends BaseWidget
                                     ->content(new HtmlString('<div class="border-b">
                                                     <p class="text-lg">1. DATA AWAL</p>
                                                 </div>')),
-
-                                Group::make()
-                                    ->relationship('statussantri')
-                                    ->schema([
-                                        Hidden::make('stat_santri_id')
-                                            ->default(1),
-                                    ]),
 
                                 Grid::make(4)
                                     ->schema([
@@ -2126,7 +2154,7 @@ class TambahCalonSantri extends BaseWidget
 
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->label('Edit Data')
+                    ->label('Edit Data Calon Santri')
                     ->modalHeading('Edit Calon Santri')
                     ->modalDescription(new HtmlString('<div class="">
                                                             <p>Butuh bantuan?</p>
@@ -2161,13 +2189,22 @@ class TambahCalonSantri extends BaseWidget
                                         </table>
 
                                                         </div>'))
+                    ->modalCloseButton(false)
                     ->modalWidth('full')
-                    // ->stickyModalHeader()
-                    ->button()
                     ->closeModalByClickingAway(false)
                     ->closeModalByEscaping(false)
+                    ->button()
                     ->modalSubmitActionLabel('Simpan')
                     ->modalCancelAction(fn(StaticAction $action) => $action->label('Batal'))
+                    ->after(function ($record) {
+                        Notification::make()
+                            ->success()
+                            ->title('Alhamdulillah data calon santri telah tersimpan')
+                            ->body('Lanjutkan menambah calon santri, atau keluar jika telah selesai')
+                            // ->persistent()
+                            ->color('success')
+                            ->send();
+                    })
                     ->steps([
 
                         Step::make('1. DATA AWAL')
@@ -2204,13 +2241,6 @@ class TambahCalonSantri extends BaseWidget
                                     ->content(new HtmlString('<div class="border-b">
                                                     <p class="text-lg">1. DATA AWAL</p>
                                                 </div>')),
-
-                                Group::make()
-                                    ->relationship('statussantri')
-                                    ->schema([
-                                        Hidden::make('stat_santri_id')
-                                            ->default(1),
-                                    ]),
 
                                 Grid::make(4)
                                     ->schema([
@@ -4102,19 +4132,10 @@ class TambahCalonSantri extends BaseWidget
                             ]),
 
                         // end of action steps
-                    ])
-                    ->after(function ($record) {
-                        Notification::make()
-                            ->success()
-                            ->title('Alhamdulillah data calon santri telah tersimpan')
-                            ->body('Lanjutkan menambah calon santri, atau keluar jika telah selesai')
-                            ->persistent()
-                            ->color('success')
-                            ->send();
-                    }),
+                    ]),
 
                 Tables\Actions\ViewAction::make()
-                    ->label('Lihat Data')
+                    ->label('Lihat Data Calon Santri')
                     ->modalHeading('Lihat Calon Santri')
                     ->modalDescription(new HtmlString('<div class="">
                                                             <p>Butuh bantuan?</p>
@@ -4155,7 +4176,7 @@ class TambahCalonSantri extends BaseWidget
                     ->closeModalByClickingAway(false)
                     ->closeModalByEscaping(false)
                     ->modalCancelAction(fn(StaticAction $action) => $action->label('Tutup'))
-                    ->steps([
+                    ->form([
 
                         Section::make('1. DATA AWAL')
                             ->schema([

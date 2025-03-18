@@ -17,6 +17,7 @@ return [
     'password' => 'Tidak ada data ananda yang dapat naik qism',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
     'bukanpendaftar' => 'Nomor KK bukan pendaftar santri baru',
+    'bukanpendaftarlama' => 'Nomor KK bukan pendaftar santri lama',
     'belumtahap2' => 'Ananda belum ada yang lolos Tahap 2',
     'belumtahap3' => 'Dalam proses seleksi, silakan menghubungi penanggung qism ananda didaftarkan',
     'belumceknaikqism' => 'Dalam proses seleksi, silakan menghubungi penanggung qism ananda didaftarkan',

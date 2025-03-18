@@ -110,68 +110,6 @@
 
         <div class="justify-center flex text-sm">
             <ul class="timeline timeline-snap-icon timeline-compact timeline-vertical">
-                <li>
-                    <div class="timeline-middle">
-                        @svg('heroicon-s-check-circle', 'w-7 h-7', ['style'=> 'color: #274043'])
-                    </div>
-                    <div class="timeline-start md:text-start">
-                        <div class="w-full justify-center flex text-start">
-                            <div class="flex px-3 py-3 w-fit justify-center justify-self-center">
-                                <div class="grid grid-cols-1 card lg:card-side bg-base-100 shadow-xl px-4 py-4">
-                                    <div class="card-body">
-                                        <h2 class="card-title text-start text-tsn-header">Mulai
-                                            Pendaftaran
-                                            Santri Lama
-                                        </h2>
-                                        <div class="text-lg text-start"><strong>Pengisian Formulir dan Upload
-                                                Dokumen</strong>
-                                            <br>
-                                            10 Februari 2025
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <!--Session Status -->
-                                        <x-auth-session-status class="mb-4" :status="session('status')" />
-
-                                        <form method="POST" action="{{ route('login') }}">
-                                            @csrf
-
-                                            <!--Username -->
-                                            <div class="pt-4">
-                                                <x-input-label for="kk" :value="__('Masukkan nomor KARTU KELUARGA')" />
-                                                <x-text-input id="kk" class="block mt-1 w-full" type="text" name="kk"
-                                                    minlength="16" maxlength="16" :value="old('kk')" required
-                                                    autocomplete="kk" />
-                                                <x-input-error :messages="$errors->get('naikqism')" class="mt-2" />
-                                            </div>
-
-
-                                            <div class="flex items-center justify-center mt-4">
-                                                <x-primary-button class="ms-3">
-                                                    {{ __('Mulai') }}
-                                                </x-primary-button>
-
-
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
-                    </div>
-                    <hr class="bg-tsn-header" />
-                </li>
-                <li>
-                    <hr class="bg-tsn-header" />
-                    <div class="timeline-middle">
-                        @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
-                    </div>
-                    @livewire('statusnaikqism')
-
-                    <hr class="bg-tsn-header" />
-                </li>
                 {{-- <li>
                     <div class="timeline-middle">
                         @svg('heroicon-s-check-circle', 'w-7 h-7', ['style'=> 'color: #274043'])
@@ -232,7 +170,7 @@
                     </div>
                     <hr class="bg-tsn-header" />
                 </li> --}}
-                {{-- <li>
+                <li>
                     <div class="timeline-middle">
                         @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
                     </div>
@@ -256,19 +194,19 @@
                         </div>
                     </div>
                     <hr class="bg-tsn-accent" />
-                </li> --}}
-                {{-- <li>
-                    <hr class="bg-tsn-header" />
+                </li>
+                <li>
+                    <hr class="bg-tsn-accent" />
                     <div class="timeline-middle">
                         @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
                     </div>
                     @livewire('statuspendaftaran')
 
-                    <hr class="bg-tsn-header" />
-                </li>--}}
+                    <hr class="bg-tsn-accent" />
+                </li>
                 {{-- <li>
 
-                    <hr class="bg-tsn-header" />
+                    <hr class="bg-tsn-accent" />
                     <div class="timeline-middle">
                         @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
                     </div>
@@ -316,20 +254,10 @@
 
 
 
-                    <hr class="bg-tsn-header" />
+                    <hr class="bg-tsn-accent" />
                 </li> --}}
-                {{-- <li>
-                    <hr class="bg-tsn-header" />
-                    <div class="timeline-middle">
-                        @svg('heroicon-s-arrow-right-circle', 'w-7 h-7', ['style'=> 'color: #9e5d4b'])
-                    </div>
-                    @livewire('statusbaru')
-
-                    <hr class="bg-tsn-header" />
-                </li> --}}
-
                 <div class="timeline-middle">
-                    @svg('heroicon-s-book-open', 'w-7 h-7', ['style'=> 'color: #274043'])
+                    @svg('heroicon-s-stop', 'w-7 h-7', ['style'=> 'color: #274043'])
                 </div>
                 {{-- <li>
 

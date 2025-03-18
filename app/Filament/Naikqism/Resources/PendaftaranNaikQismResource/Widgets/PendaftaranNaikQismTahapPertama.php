@@ -18,6 +18,7 @@ use App\Models\PenghasilanWalisantri;
 use App\Models\Provinsi;
 use App\Models\Statuskepemilikanrumah;
 use App\Models\StatusWalisantri;
+use App\Models\User;
 use App\Models\Walisantri;
 use App\Models\YaTidak;
 use Egulias\EmailValidator\Parser\Comment;
@@ -66,6 +67,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
+            ->heading('1. Lengkapi Data Walisantri')
             ->paginated(false)
             ->query(
                 Walisantri::where('user_id', Auth::user()->id)
@@ -118,16 +120,34 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                             Notification::make()
                                 ->success()
                                 ->title('Data Walisantri telah tersimpan')
-                                ->body('Lanjutkan dengan menambah data calon santri')
-                                ->persistent()
+                                ->body('Lanjutkan dengan mendaftarkan santri naik qism')
+                                // ->persistent()
                                 ->color('Success')
                                 ->send();
 
                             // dd($record);
 
                             $walisantri = Walisantri::find($record->id);
-                            $walisantri->is_collapse = '1';
+                            $walisantri->is_collapse = 1;
+                            $walisantri->ws_emis4 = 1;
+                            $walisantri->nama_kpl_kel_santri = Str::ucwords(strtolower($record->nama_kpl_kel_santri));
+                            $walisantri->ak_nama_lengkap = Str::ucwords(strtolower($record->ak_nama_lengkap));
+                            $walisantri->ak_nama_kunyah = Str::ucwords(strtolower($record->ak_nama_kunyah));
+                            $walisantri->ak_tempat_lahir = Str::ucwords(strtolower($record->ak_tempat_lahir));
+                            $walisantri->ak_kep_kel_kk = Str::ucwords(strtolower($record->ak_kep_kel_kk));
+                            $walisantri->ik_nama_lengkap = Str::ucwords(strtolower($record->ik_nama_lengkap));
+                            $walisantri->ik_nama_kunyah = Str::ucwords(strtolower($record->ik_nama_kunyah));
+                            $walisantri->ik_tempat_lahir = Str::ucwords(strtolower($record->ik_tempat_lahir));
+                            $walisantri->ik_kep_kel_kk = Str::ucwords(strtolower($record->ik_kep_kel_kk));
+                            $walisantri->w_nama_lengkap = Str::ucwords(strtolower($record->w_nama_lengkap));
+                            $walisantri->w_nama_kunyah = Str::ucwords(strtolower($record->w_nama_kunyah));
+                            $walisantri->w_tempat_lahir = Str::ucwords(strtolower($record->w_tempat_lahir));
+                            $walisantri->w_kep_kel_kk = Str::ucwords(strtolower($record->w_kep_kel_kk));
                             $walisantri->save();
+
+                            $properuser = User::where('id', $record->user->id)->first();
+                            $properuser->name = Str::ucwords(strtolower($record->user->name));
+                            $properuser->save();
                         })
                         ->modalDescription(new HtmlString('<div class="">
                                                             <p>Butuh bantuan?</p>
@@ -239,8 +259,8 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg">A.01 STATUS AYAH KANDUNG</p>
-                                                </div>')),
+                                                                                    <p class="text-lg">A.01 STATUS AYAH KANDUNG</p>
+                                                                                </div>')),
 
                                         ]),
 
@@ -346,7 +366,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 // ->format('dd/mm/yyyy')
                                                 ->displayFormat('d M Y')
                                                 ->maxDate(now())
-                                                // ->native(false)
+                                                ->native(false)
                                                 ->closeOnDateSelection(),
                                         ]),
 
@@ -448,8 +468,8 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                         <p class="text-lg">Kajian yang diikuti</p>
-                                     </div>')),
+                                                                         <p class="text-lg">Kajian yang diikuti</p>
+                                                                     </div>')),
                                         ]),
 
                                     Grid::make(2)
@@ -481,9 +501,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                    <p class="text-lg">A.02 KARTU KELUARGA</p>
-                                    <p class="text-lg">AYAH KANDUNG</p>
-                                       </div>')),
+                                                                    <p class="text-lg">A.02 KARTU KELUARGA</p>
+                                                                    <p class="text-lg">AYAH KANDUNG</p>
+                                                                       </div>')),
                                         ]),
 
                                     Grid::make(4)
@@ -550,9 +570,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg">A.03 TEMPAT TINGGAL DOMISILI</p>
-                                                    <p class="text-lg">AYAH KANDUNG</p>
-                                                </div>')),
+                                                                                    <p class="text-lg">A.03 TEMPAT TINGGAL DOMISILI</p>
+                                                                                    <p class="text-lg">AYAH KANDUNG</p>
+                                                                                </div>')),
                                         ]),
 
                                     Grid::make(4)
@@ -767,8 +787,8 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg">B.01 STATUS IBU KANDUNG</p>
-                                                </div>')),
+                                                                                    <p class="text-lg">B.01 STATUS IBU KANDUNG</p>
+                                                                                </div>')),
                                         ]),
 
                                     Grid::make(4)
@@ -870,7 +890,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 // ->format('dd/mm/yyyy')
                                                 ->displayFormat('d M Y')
                                                 ->maxDate(now())
-                                                // ->native(false)
+                                                ->native(false)
                                                 ->closeOnDateSelection(),
                                         ]),
 
@@ -966,8 +986,8 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                         <p class="text-lg">Kajian yang diikuti</p>
-                                     </div>')),
+                                                                         <p class="text-lg">Kajian yang diikuti</p>
+                                                                     </div>')),
 
                                         ]),
 
@@ -1023,9 +1043,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                <p class="text-lg">B.02 KARTU KELUARGA</p>
-                                <p class="text-lg">IBU KANDUNG</p>
-                                </div>')),
+                                                                        <p class="text-lg">B.02 KARTU KELUARGA</p>
+                                                                        <p class="text-lg">IBU KANDUNG</p>
+                                                                        </div>')),
 
                                         ])
 
@@ -1140,9 +1160,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg">B.03 TEMPAT TINGGAL DOMISILI</p>
-                                                    <p class="text-lg">IBU KANDUNG</p>
-                                                </div>')),
+                                                                                    <p class="text-lg">B.03 TEMPAT TINGGAL DOMISILI</p>
+                                                                                    <p class="text-lg">IBU KANDUNG</p>
+                                                                                </div>')),
                                         ])->hidden(fn(Get $get) =>
                                         $get('ik_kk_sama_ak_id') == null ||
                                             $get('ik_kk_sama_ak_id') != 2 ||
@@ -1398,8 +1418,8 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg">C.01 STATUS WALI</p>
-                                                </div>')),
+                                                                                    <p class="text-lg">C.01 STATUS WALI</p>
+                                                                                </div>')),
 
                                         ]),
 
@@ -1536,7 +1556,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 ->required()
                                                 // ->format('dd/mm/yyyy')
                                                 ->displayFormat('d M Y')
-                                                // ->native(false)
+                                                ->native(false)
                                                 ->closeOnDateSelection()
                                                 ->hidden(fn(Get $get) =>
                                                 $get('w_status_id') != 3),
@@ -1636,8 +1656,8 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                         <p class="text-lg">Kajian yang diikuti</p>
-                                     </div>'))
+                                                                         <p class="text-lg">Kajian yang diikuti</p>
+                                                                     </div>'))
                                                 ->hidden(fn(Get $get) =>
                                                 $get('w_status_id') != 3),
 
@@ -1672,9 +1692,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                    <p class="text-lg">C.02 KARTU KELUARGA</p>
-                                    <p class="text-lg">WALI</p>
-                                </div>'))
+                                                                    <p class="text-lg">C.02 KARTU KELUARGA</p>
+                                                                    <p class="text-lg">WALI</p>
+                                                                 </div>'))
                                                 ->hidden(fn(Get $get) =>
                                                 $get('w_status_id') != 3),
                                         ]),
@@ -1740,9 +1760,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                                    <p class="text-lg">C.03 TEMPAT TINGGAL DOMISILI</p>
-                                                    <p class="text-lg">WALI</p>
-                                                </div>'))
+                                                                                    <p class="text-lg">C.03 TEMPAT TINGGAL DOMISILI</p>
+                                                                                    <p class="text-lg">WALI</p>
+                                                                                </div>'))
                                                 ->hidden(fn(Get $get) =>
                                                 $get('w_status_id') != 3),
                                         ]),
@@ -2125,7 +2145,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 // ->format('dd/mm/yyyy')
                                                 ->displayFormat('d M Y')
                                                 ->maxDate(now())
-                                                // ->native(false)
+                                                ->native(false)
                                                 ->closeOnDateSelection(),
                                         ]),
 
@@ -2649,7 +2669,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 // ->format('dd/mm/yyyy')
                                                 ->displayFormat('d M Y')
                                                 ->maxDate(now())
-                                                // ->native(false)
+                                                ->native(false)
                                                 ->closeOnDateSelection(),
                                         ]),
 
@@ -2750,6 +2770,31 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
 
                                         ]),
 
+                                    Grid::make(4)
+                                        ->schema([
+
+                                            ToggleButtons::make('ik_kajian_sama_ak_id')
+                                                ->label('Apakah kajian yang diikuti sama dengan Ayah?')
+                                                ->live()
+                                                ->inline()
+                                                ->grouped()
+                                                ->boolean()
+                                                ->options(YaTidak::whereIsActive(1)->pluck('ya_tidak', 'id'))
+                                                ->hidden(fn(Get $get) =>
+                                                $get('ik_status_id') != 1)
+                                                ->afterStateUpdated(function (Get $get, Set $set) {
+
+                                                    if ($get('ik_kajian_sama_ak_id') == 1) {
+                                                        $set('ik_ustadz_kajian', $get('ak_ustadz_kajian'));
+                                                        $set('ik_tempat_kajian', $get('ak_tempat_kajian'));
+                                                    } else {
+                                                        $set('ik_ustadz_kajian', null);
+                                                        $set('ik_tempat_kajian', null);
+                                                    }
+                                                })->columnSpanFull(),
+
+                                        ]),
+
                                     Grid::make(2)
                                         ->hidden(fn(Get $get) =>
                                         $get('ik_status_id') != 1)
@@ -2777,9 +2822,9 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                         ->schema([
                                             Placeholder::make('')
                                                 ->content(new HtmlString('<div class="border-b">
-                                <p class="text-lg">B.02 KARTU KELUARGA</p>
-                                <p class="text-lg">IBU KANDUNG</p>
-                                </div>')),
+                                        <p class="text-lg">B.02 KARTU KELUARGA</p>
+                                        <p class="text-lg">IBU KANDUNG</p>
+                                        </div>')),
 
                                         ])
 
@@ -3290,7 +3335,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 ->required()
                                                 // ->format('dd/mm/yyyy')
                                                 ->displayFormat('d M Y')
-                                                // ->native(false)
+                                                ->native(false)
                                                 ->closeOnDateSelection()
                                                 ->hidden(fn(Get $get) =>
                                                 $get('w_status_id') != 3),
@@ -3428,7 +3473,7 @@ class PendaftaranNaikQismTahapPertama extends BaseWidget
                                                 ->content(new HtmlString('<div class="border-b">
                                     <p class="text-lg">C.02 KARTU KELUARGA</p>
                                     <p class="text-lg">WALI</p>
-                                </div>'))
+                                 </div>'))
                                                 ->hidden(fn(Get $get) =>
                                                 $get('w_status_id') != 3),
                                         ]),

@@ -36,6 +36,11 @@ class PendaftaranNaikQismResource extends Resource
 {
     protected static ?string $model = Walisantri::class;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->id == 1 || auth()->user()->id == 2;
+    }
+
     protected static bool $isLazy = false;
 
     protected static bool $shouldRegisterNavigation = false;

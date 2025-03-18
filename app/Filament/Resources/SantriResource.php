@@ -17,6 +17,11 @@ class SantriResource extends Resource
 {
     protected static ?string $model = Santri::class;
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->id == 1 || auth()->user()->id == 2;
+    }
+
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
